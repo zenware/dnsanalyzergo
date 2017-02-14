@@ -1,6 +1,9 @@
 package main
 
-import "flag"
+import (
+	"flag"
+	"os"
+)
 
 func main() {
 	samplesPtr := flag.Int("samples", 100, "How many DNS Requests you want to make")
@@ -9,5 +12,6 @@ func main() {
 
 	flag.Parse()
 
-	analyzeDns(*serverPtr, *domainPtr, *samplesPtr)
+	w := os.Stdout
+	analyzeDns(w, *serverPtr, *domainPtr, *samplesPtr)
 }

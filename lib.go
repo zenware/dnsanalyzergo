@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"math"
 	"sort"
@@ -47,7 +48,7 @@ func (p DurationSlice) Std() time.Duration {
 }
 
 // TODO(zenware): make this output to a writer
-func analyzeDns(server, hostname string, samples int) {
+func analyzeDns(w io.Writer, server, hostname string, samples int) {
 	m := new(dns.Msg)
 	m.Id = dns.Id()
 	m.RecursionDesired = true
@@ -66,7 +67,7 @@ func analyzeDns(server, hostname string, samples int) {
 			continue
 		}
 		rtts[i] = rtt
-		fmt.Printf("%v bytes from %v: ttl=%v time=%v\n", in.Len(), server, time.Second*6, rtt)
+		fmt.Fprintf(w, "%v bytes from %v: ttl=%v time=%v\n", in.Len(), server, time.Second*6, rtt)
 	}
 
 	// NOTE: Potentially Eating Performance for Pretties
@@ -76,5 +77,5 @@ func analyzeDns(server, hostname string, samples int) {
 	avg = rtts.Avg()
 	stddev = rtts.Std()
 
-	fmt.Printf("round-trip min/avg/max/stddev = %v/%v/%v/%v\n", min, avg, max, stddev)
+	fmt.Fprintf(w, "round-trip min/avg/max/stddev = %v/%v/%v/%v\n", min, avg, max, stddev)
 }
