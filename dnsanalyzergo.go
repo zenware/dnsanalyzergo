@@ -39,6 +39,7 @@ func main() {
 		in, rtt, err := c.Exchange(m, *serverPtr+":53")
 		if err != nil {
 			log.Println(err)
+			continue
 		}
 		rtts[i] = rtt
 		fmt.Printf("%v bytes from %v: ttl=%v time=%v\n", in.Len(), *serverPtr, time.Second*6, rtt)
