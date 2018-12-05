@@ -48,12 +48,13 @@ func (p DurationSlice) Std() time.Duration {
 }
 
 // TODO(zenware): make this output to a writer
-func analyzeDns(w io.Writer, server, hostname string, samples int) {
+func analyzeDns(w io.Writer, server, hostname string, samples, waitMillis int) {
 	m := new(dns.Msg)
 	m.Id = dns.Id()
 	m.RecursionDesired = true
 	m.Question = make([]dns.Question, 1)
-	m.Question[0] = dns.Question{dns.Fqdn(hostname), dns.TypeA, dns.ClassINET}
+	m.Question[0] = dns.Question{Name: dns.Fqdn(hostname), Qtype: dns.TypeA, Qclass: dns.ClassINET}
+	wait := time.Duration(waitMillis) * time.Millisecond
 
 	c := new(dns.Client)
 
@@ -68,6 +69,7 @@ func analyzeDns(w io.Writer, server, hostname string, samples int) {
 		}
 		rtts[i] = rtt
 		fmt.Fprintf(w, "%v bytes from %v: ttl=%v time=%v\n", in.Len(), server, time.Second*6, rtt)
+		time.Sleep(wait)
 	}
 
 	// NOTE: Potentially Eating Performance for Pretties
